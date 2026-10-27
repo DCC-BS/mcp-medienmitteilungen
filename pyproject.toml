@@ -1,0 +1,43 @@
+[project]
+name = "medienmitteilungen-bs-mcp"
+version = "0.1.0"
+description = "MCP server for the press releases (Medienmitteilungen) of the canton of Basel-Stadt (www.bs.ch)"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "httpx>=0.28.1",
+    "mcp[cli]>=2.3.0",
+    "uvicorn>=0.54.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.0",
+    "ruff>=0.16.10",
+]
+
+[project.scripts]
+medienmitteilungen-bs-mcp = "main:main"
+medienmitteilungen-bs-mcp-http = "main:main_http"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]
+
+[tool.ruff]
+line-length = 100
+
+[tool.hatch.build.targets.wheel.force-include]
+".env.example" = ".env.example"
+
+[tool.uv]
+# Supply-chain cooldown: uv only uses distributions uploaded at least 7 days ago.
+exclude-newer = "P7D"
+# TEMPORARY until 2026-10-29: certifi skip the cooldown entirely (P0D), so the locked
+# security fixes don't get downgraded. The weekly dependency routine removes only these temporary
+# entries once the locked versions are 7 days old; Renovate's 14-day minimum age still applies.
+exclude-newer-package = { certifi = "P0D" }

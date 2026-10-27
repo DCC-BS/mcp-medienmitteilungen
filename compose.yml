@@ -1,0 +1,20 @@
+services:
+  mcp-medienmitteilungen:
+    image: ghcr.io/dcc-bs/mcp-medienmitteilungen:${IMAGE_TAG:-0.1.0}
+    container_name: ${CONTAINER_NAME:-mcp-medienmitteilungen}
+    restart: unless-stopped
+    ports:
+      - "${HOST_PORT:-8000}:8000"
+    environment:
+      BS_DOMAIN: ${BS_DOMAIN:-www.bs.ch}
+      ORG_CACHE_TTL: ${ORG_CACHE_TTL:-3600}
+      PORT: "8000"
+      # Host header allowed past DNS-rebinding protection; add the public
+      # hostname(s) this deployment is served under (with :* port wildcard).
+      MCP_ALLOWED_HOSTS: ${MCP_ALLOWED_HOSTS:-}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/healthz', timeout=5)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
